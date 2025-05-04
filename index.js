@@ -7,12 +7,17 @@ const app = express();
 app.use(bodyParser.json());
 
 app.post("/ask", async (req, res) => {
-  const query = req.body?.request?.intent?.slots?.query?.value || "Hello";
+  console.log("Incoming request:", JSON.stringify(req.body, null, 2));
+
+  const query =
+    req.body?.request?.intent?.slots?.Query?.value ||
+    req.body?.request?.intent?.slots?.query?.value ||
+    "Hello";
 
   try {
     const gptRes = await axios.post("https://api.openai.com/v1/chat/completions", {
       model: "gpt-4-turbo",
-      messages: [{ role: "user", content: query }]
+      messages: [{ role: "user", content: query }],
     }, {
       headers: {
         Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
@@ -32,14 +37,16 @@ app.post("/ask", async (req, res) => {
         shouldEndSession: true
       }
     });
+
   } catch (err) {
-    console.error(err);
+    console.error("Error:", err.message);
+
     res.json({
       version: "1.0",
       response: {
         outputSpeech: {
           type: "PlainText",
-          text: "Sorry, Dave A.I. encountered an error."
+          text: "Sorry, DAVE A.I. encountered an error."
         },
         shouldEndSession: true
       }
@@ -48,4 +55,6 @@ app.post("/ask", async (req, res) => {
 });
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`DAVE A.I. running on port ${port}`));
+app.listen(port, () => {
+  console.log(`DAVE A.I. running on port ${port}`);
+});
