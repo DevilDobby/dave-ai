@@ -6,6 +6,8 @@ app.use(bodyParser.json());
 
 app.post("/", (req, res) => {
   const reqType = req.body.request?.type;
+  const intentName = req.body.request?.intent?.name;
+  const slotValue = req.body.request?.intent?.slots?.query?.value || "something";
 
   if (reqType === "LaunchRequest") {
     return res.json({
@@ -20,29 +22,26 @@ app.post("/", (req, res) => {
     });
   }
 
-  if (reqType === "IntentRequest") {
-    const intentName = req.body.request.intent.name;
-    const slotValue = req.body.request.intent.slots?.query?.value || "nothing";
-
+  if (reqType === "IntentRequest" && intentName === "AskIntent") {
     return res.json({
       version: "1.0",
       response: {
         outputSpeech: {
           type: "PlainText",
-          text: `You asked me about ${slotValue}. I'm working on that feature.`,
+          text: `You asked about ${slotValue}. I'm working on that feature.`,
         },
         shouldEndSession: true
       }
     });
   }
 
-  // Fallback for unsupported types
-  res.json({
+  // fallback
+  return res.json({
     version: "1.0",
     response: {
       outputSpeech: {
         type: "PlainText",
-        text: "Sorry, I didn't understand that request.",
+        text: "Sorry, I didn't understand that.",
       },
       shouldEndSession: true
     }
@@ -50,4 +49,4 @@ app.post("/", (req, res) => {
 });
 
 const port = process.env.PORT || 10000;
-app.listen(port, () => console.log(`Dave A.I. running on port ${port}`));
+app.listen(port, () => console.log(`DAVE A.I. running on port ${port}`));
