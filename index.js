@@ -8,7 +8,7 @@ app.use(bodyParser.json());
 app.post("/", async (req, res) => {
   const requestType = req.body.request?.type;
 
-  // LaunchRequest: "open dave a. i."
+  // Handle: "open dave a. i."
   if (requestType === "LaunchRequest") {
     return res.json({
       version: "1.0",
@@ -22,7 +22,7 @@ app.post("/", async (req, res) => {
     });
   }
 
-  // IntentRequest: "ask dave about climate change"
+  // Handle: "ask dave about X"
   if (requestType === "IntentRequest") {
     const query = req.body.request.intent?.slots?.query?.value || "Hello";
 
@@ -65,13 +65,13 @@ app.post("/", async (req, res) => {
     }
   }
 
-  // Catch-all for unknown requests
+  // Anything else: fallback response
   return res.json({
     version: "1.0",
     response: {
       outputSpeech: {
         type: "PlainText",
-        text: "Dave A.I. doesn't know how to handle that request yet."
+        text: "Dave A.I. doesn't understand this type of request."
       },
       shouldEndSession: true
     }
@@ -79,4 +79,4 @@ app.post("/", async (req, res) => {
 });
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`DAVE A.I. listening on port ${port}`));
+app.listen(port, () => console.log(`DAVE A.I. running on port ${port}`));
