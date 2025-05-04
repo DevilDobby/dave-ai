@@ -2,12 +2,10 @@ const express = require("express");
 const bodyParser = require("body-parser");
 
 const app = express();
-app.use(bodyParser.json());
+app.use(bodyParser.json({ type: 'application/json' }));
 
-app.post("/", (req, res) => {
+app.post("/ask", (req, res) => {
   const reqType = req.body.request?.type;
-  const intentName = req.body.request?.intent?.name;
-  const slotValue = req.body.request?.intent?.slots?.query?.value || "something";
 
   if (reqType === "LaunchRequest") {
     return res.json({
@@ -15,33 +13,35 @@ app.post("/", (req, res) => {
       response: {
         outputSpeech: {
           type: "PlainText",
-          text: "Hello! Dave A.I. is online. You can ask me anything.",
+          text: "DAVE A.I. is online. You can ask me anything."
         },
         shouldEndSession: false
       }
     });
   }
 
-  if (reqType === "IntentRequest" && intentName === "AskIntent") {
+  if (reqType === "IntentRequest") {
+    const intentName = req.body.request.intent.name;
+    const slot = req.body.request.intent.slots?.query?.value || "something";
+
     return res.json({
       version: "1.0",
       response: {
         outputSpeech: {
           type: "PlainText",
-          text: `You asked about ${slotValue}. I'm working on that feature.`,
+          text: `You asked about ${slot}. Processing now.`
         },
         shouldEndSession: true
       }
     });
   }
 
-  // fallback
   return res.json({
     version: "1.0",
     response: {
       outputSpeech: {
         type: "PlainText",
-        text: "Sorry, I didn't understand that.",
+        text: "Sorry, I didn’t get that."
       },
       shouldEndSession: true
     }
